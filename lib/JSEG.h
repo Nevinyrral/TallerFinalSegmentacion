@@ -1,5 +1,5 @@
 #include <opencv2/opencv.hpp>
-#define COLOR_CLASSES (20)
+#define COLOR_CLASSES (128 + 32)
 
 using namespace cv;
 
@@ -14,12 +14,12 @@ public:
   ~JSEG( );
   void Update( );
   void SetThreshold( int threshold );
-  void SetMat( Mat mat );
+  void SetInput( Mat mat );
   Mat  GetOutput( );
 private:
-  TClasses image_classes;
-  Mat      image_mat;
-  int      threshold;
+  TClasses m_Classes;
+  Mat      m_Image;
+  int      m_Threshold;
 private:
   void _Quantize( TClasses& classes );
 }; // saalc

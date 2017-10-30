@@ -2,66 +2,70 @@
 
 //--------------------------------------------------------------------------
 
-Self::JSEG( )
+JSEG::JSEG( )
 {
 }
 
 //--------------------------------------------------------------------------
 
-Self::~JSEG( )
+JSEG::~JSEG( )
 {
 }
 
 //--------------------------------------------------------------------------
 
-Self::SetThreshold( int threshold )
+void JSEG::SetThreshold( int threshold )
 {
-  this->class_threshold = threshold;
+  this->m_Threshold = threshold;
 }
 
 //--------------------------------------------------------------------------
 
-Self::SetMat( Mat mat )
+void JSEG::SetInput( Mat mat )
 {
-  this->image_mat = mat;
+  this->m_Image = mat;
 }
 
 //--------------------------------------------------------------------------
 
-void Self::Update( )
+void JSEG::Update( )
 {
-  this->_Quantize( );
+  this->_Quantize( this-> m_Classes );
 }
 
 //--------------------------------------------------------------------------
 
-void Self::GetOutput( )
+Mat JSEG::GetOutput( )
 {
-  return this->image_mat;
+  return this->m_Image;
 }
 
 //--------------------------------------------------------------------------
 
-Self::_Quantize( TClasses& classes )
+void JSEG::_Quantize( TClasses& classes )
 {
-  for( int i = 0; i < ( ( this->image_mat ).begin( );  ).rows( ), ++i )
+  int rows = ( this->m_Image ).rows;
+  int cols = ( this->m_Image ).cols;
+  int channels = ( this->m_Image ).channels( );
+
+  for( int i = 0; i < rows; ++i )
   {
-    uchar* data = ( this->image_mat ).ptr< uchar >( i );
-    for( int j = 0; j < ( this->image_mat ).cols( ) * image.channels( ), ++j )
+    uchar* data = ( this->m_Image ).ptr< uchar >( i );
+    for( int j = 0; j < cols * channels; ++j )
     {
-      std::cout << "Before: " << data[ j ] << std::endl;
       data[ j ] =
         data[ j ] / COLOR_CLASSES * COLOR_CLASSES + COLOR_CLASSES / 2;
-      std::cout << "After: " << data[ j ] << std::endl;
     } // rof
   } // rof
+  std::set< int > colors;
   for(
-    MatIterator_<uchar> it = ( this->image_mat ).begin( );
-    it != ( this->image_mat ).end( ); ++it
+    MatIterator_< Vec3i > it = ( this->m_Image ).begin< Vec3i >( );
+    it != ( this->m_Image ).end< uchar >( ); ++it
     )
   {
-    std::cout << it << std::endl;
+    colors.insert( (*it)[0] + (*it)[1] + (*it)[2] );
   } // rof
+  std::cout << "Color classes: " << colors.size( ) << '\n';
 }
 
 //--------------------------------------------------------------------------
