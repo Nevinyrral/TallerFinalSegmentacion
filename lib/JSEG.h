@@ -1,14 +1,16 @@
 #include <opencv2/opencv.hpp>
-#define COLOR_CLASSES (128 + 32)
+#include <string>
+#define COLOR_CLASSES (128 + 64 + 32)
 
 using namespace cv;
+
+uchar _ReduceVal( const uchar val );
 
 class JSEG
 {
 public:
-  typedef std::vector< std::pair< int, int > >  TPixels;
-  typedef std::map< int, TPixels >              TClasses;
-  typedef JSEG                                  Self;
+  typedef std::vector< Point2i >           TPixels;
+  typedef std::map< std::string, TPixels > TClasses;
 public:
   JSEG( );
   ~JSEG( );
