@@ -1,5 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
+#include <cmath>
+
 #define COLOR_CLASSES (128 + 64 + 32)
 
 using namespace cv;
@@ -12,6 +14,7 @@ class JSEG
     typedef std::vector< Point2i >           TPixels;
     typedef std::map< std::string, TPixels > TClasses;
     typedef std::map< std::string, Point2f > TMeans;
+    typedef std::map< std::string, float >   TSw;
 
   public:
     JSEG( );
@@ -27,10 +30,11 @@ class JSEG
     Mat      m_Input;
     Mat      m_Output;
     int      m_Threshold;
+    float    m_St;
+    TSw      m_Sw;
     Point2f  m_Mean;
 
   private:
     void _Quantize( );
-    void _CalculateCriteria( );
 
 }; // saalc

@@ -67,8 +67,8 @@ void JSEG::_Quantize( )
       m_Means[ color_signature ].x += j;
       m_Means[ color_signature ].y += i;
     } // rof
-  // ( this->m_Mean ).x = ( this->m_Mean ).x / pixel_count;
-  // ( this->m_Mean ).y = ( this->m_Mean ).y / pixel_count;
+  std::cout << "Color classes: " << ( this->m_Classes ).size( ) << '\n';
+  std::cout << "Calculating standard deviations and J values..." << std::endl;
   for(
     TClasses::iterator it = m_Classes.begin( );
     it != m_Classes.end( ); ++it
@@ -77,10 +77,27 @@ void JSEG::_Quantize( )
     m_Means[ it->first ].x = m_Means[ it->first ].x / ( it->second ).size( );
     m_Means[ it->first ].y = m_Means[ it->first ].y / ( it->second ).size( );
     std::cout << "Mean for " << it->first  << ": " <<
-      m_Means[ it->first ] << '\n';
+      this->m_Means[ it->first ] << '\n';
+    for( Point2i class_pixel : m_Classes[ it->first ] )
+    {
+      this->m_Sw[ it->first ] +=
+           pow( class_pixel.x - ( this->m_Means[ it->first ] ).x, 2 ) +
+           pow( class_pixel.y - ( this->m_Means[ it->first ] ).y, 2 );
+
+    } // rof
+    std::cout << "Stardard deviation for " << it->first  << ": " <<
+      this->m_Sw[ it->first ]<< '\n';
   } // rof
-  std::cout << "Color classes: " << ( this->m_Classes ).size( ) << '\n';
-  std::cout << "Mean class-map: " << this->m_Mean << '\n';
+  std::cout << "Mean for class-map: " << this->m_Mean << '\n';
+  data = ( this->m_Output ).data;
+  for( int i = 0; i < rows; ++i )
+    for( int j = 0; j < cols; ++j )
+    {
+      this->m_St +=
+           pow( j - ( this->m_Mean ).x, 2 ) +
+           pow( i - ( this->m_Mean ).y, 2 );
+    } // rof
+  std::cout << "Stardard deviation for class-map: " << this->m_St << '\n';
 }
 
 //--------------------------------------------------------------------------
