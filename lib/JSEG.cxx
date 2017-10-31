@@ -23,31 +23,33 @@ void JSEG::SetThreshold( int threshold )
 
 void JSEG::SetInput( Mat mat )
 {
-  this->m_Image = mat;
+  this->m_Input = mat;
+  this->m_Output = ( this->m_Input ).clone( );
 }
 
 //--------------------------------------------------------------------------
 
 void JSEG::Update( )
 {
-  this->_Quantize( this-> m_Classes );
+  this->_Quantize( );
 }
 
 //--------------------------------------------------------------------------
 
 Mat JSEG::GetOutput( )
 {
-  return this->m_Image;
+  return this->m_Output;
 }
 
 //--------------------------------------------------------------------------
 
-void JSEG::_Quantize( TClasses& classes )
+void JSEG::_Quantize( )
 {
-  int rows = ( this->m_Image ).rows;
-  int cols = ( this->m_Image ).cols;
+  int rows = ( this->m_Output ).rows;
+  int cols = ( this->m_Output ).cols;
+  int pixel_count = rows * cols;
 
-  uchar* data = ( this->m_Image ).data;
+  uchar* data = ( this->m_Output ).data;
   for( int i = 0; i < rows; ++i )
     for( int j = 0; j < cols; ++j )
     {
@@ -59,9 +61,26 @@ void JSEG::_Quantize( TClasses& classes )
         std::to_string( (int) data[ pi + 0 ] ) +
         std::to_string( (int) data[ pi + 1 ] ) +
         std::to_string( (int) data[ pi + 2 ] );
-      classes[ color_signature ].push_back( Point2i( i, j ) );
+      ( this->m_Classes )[ color_signature ].push_back( Point2i( j, i ) );
+      ( this->m_Mean ).x += j / ( float ) pixel_count;
+      ( this->m_Mean ).y += i / ( float ) pixel_count;
+      m_Means[ color_signature ].x += j;
+      m_Means[ color_signature ].y += i;
     } // rof
-  std::cout << "Color classes: " << classes.size( ) << '\n';
+  // ( this->m_Mean ).x = ( this->m_Mean ).x / pixel_count;
+  // ( this->m_Mean ).y = ( this->m_Mean ).y / pixel_count;
+  for(
+    TClasses::iterator it = m_Classes.begin( );
+    it != m_Classes.end( ); ++it
+    )
+  {
+    m_Means[ it->first ].x = m_Means[ it->first ].x / ( it->second ).size( );
+    m_Means[ it->first ].y = m_Means[ it->first ].y / ( it->second ).size( );
+    std::cout << "Mean for " << it->first  << ": " <<
+      m_Means[ it->first ] << '\n';
+  } // rof
+  std::cout << "Color classes: " << ( this->m_Classes ).size( ) << '\n';
+  std::cout << "Mean class-map: " << this->m_Mean << '\n';
 }
 
 //--------------------------------------------------------------------------
