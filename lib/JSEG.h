@@ -1,11 +1,11 @@
 #include <opencv2/opencv.hpp>
+#include <Region.h>
 #include <string>
 #include <cmath>
 
-#define COLOR_CLASSES (128 + 64 + 32)
-
 using namespace cv;
 
+bool  _IsPrime( int n );
 uchar _ReduceVal( const uchar val );
 
 class JSEG
@@ -13,28 +13,25 @@ class JSEG
   public:
     typedef std::vector< Point2i >           TPixels;
     typedef std::map< std::string, TPixels > TClasses;
-    typedef std::map< std::string, Point2f > TMeans;
-    typedef std::map< std::string, float >   TSw;
+    typedef std::vector< Region >            TRegions;
 
   public:
     JSEG( );
     ~JSEG( );
     void Update( );
-    void SetThreshold( int threshold );
     void SetInput( Mat mat );
     Mat  GetOutput( );
 
   private:
-    TClasses m_Classes;
-    TMeans   m_Means;
     Mat      m_Input;
     Mat      m_Output;
-    int      m_Threshold;
-    float    m_St;
-    TSw      m_Sw;
-    Point2f  m_Mean;
+    TRegions m_Regions;
+    TClasses m_Classes;
+    int      m_RDivisor;
+    int      m_CDivisor;
 
   private:
     void _Quantize( );
-
-}; // saalc
+    void _GetDivisors( );
+    bool _Subdivide( );
+}; // ssalc
